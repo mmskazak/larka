@@ -64,7 +64,7 @@ php artisan breeze:install vue --dark
 
 **Решение:** Обновлен `@vitejs/plugin-vue` до версии `^6.0.0` в `package.json`
 
-**Файл:** [package.json](package.json:13)
+**Файл:** [package.json](../package.json:13)
 ```json
 "@vitejs/plugin-vue": "^6.0.0"
 ```
@@ -185,7 +185,7 @@ npm run dev
 
 1. **Активирован интерфейс MustVerifyEmail в модели User**
 
-   **Файл:** [app/Models/User.php](app/Models/User.php:5-10)
+   **Файл:** [app/Models/User.php](../app/Models/User.php:5-10)
 
    Изменения:
    ```php
@@ -200,7 +200,7 @@ npm run dev
 
 2. **Добавлен middleware 'verified' к защищённым маршрутам**
 
-   **Файл:** [routes/web.php](routes/web.php:19-25)
+   **Файл:** [routes/web.php](../routes/web.php:19-25)
 
    Изменения:
    ```php
@@ -219,7 +219,7 @@ npm run dev
 
 3. **Обновлён .env.example с настройками почты**
 
-   **Файл:** [.env.example](.env.example:50-66)
+   **Файл:** [.env.example](../.env.example:50-66)
 
    Добавлены комментарии для разработчиков:
    ```env
@@ -276,7 +276,7 @@ POST   /email/verification-notification - повторная отправка п
 
 **Созданные файлы:**
 
-1. **[docker-compose.yml](docker-compose.yml)** - Docker Compose конфигурация
+1. **[docker-compose.yml](../docker-compose.yml)** - Docker Compose конфигурация
 
    ```yaml
    version: '3.8'
@@ -297,7 +297,7 @@ POST   /email/verification-notification - повторная отправка п
    - `1025` - SMTP сервер (для отправки писем из Laravel)
    - `8025` - Web UI (для просмотра писем в браузере)
 
-2. **[Makefile](Makefile)** - Удобные команды для разработки
+2. **[Makefile](../Makefile)** - Удобные команды для разработки
 
    **Команды MailHog:**
    ```bash
@@ -319,7 +319,7 @@ POST   /email/verification-notification - повторная отправка п
    make help          # Показать все команды
    ```
 
-3. **Обновлён [.env.example](.env.example:50-74)**
+3. **Обновлён [.env.example](../.env.example:50-74)**
 
    ```env
    MAIL_MAILER=smtp
@@ -399,7 +399,7 @@ POST   /email/verification-notification - повторная отправка п
 
 **Исправления:**
 
-1. **[Makefile](Makefile)** - Убраны все эмодзи, заменены на обычный текст
+1. **[Makefile](../Makefile)** - Убраны все эмодзи, заменены на обычный текст
 
    ```makefile
    # Было:
@@ -420,7 +420,7 @@ POST   /email/verification-notification - повторная отправка п
    @start http://localhost:8025 2>nul || echo "Please open http://localhost:8025 in your browser"
    ```
 
-2. **[docker-compose.yml](docker-compose.yml)** - Удалено устаревшее поле `version`
+2. **[docker-compose.yml](../docker-compose.yml)** - Удалено устаревшее поле `version`
 
    ```yaml
    # Было:
@@ -461,7 +461,7 @@ make mail-ui       # Открыть Web UI
 
 **Решение:**
 
-1. **Обновлён [.env](.env:50-58)** для работы с MailHog
+1. **Обновлён [.env](../.env:50-58)** для работы с MailHog
 
    ```env
    # Было:
@@ -478,7 +478,7 @@ make mail-ui       # Открыть Web UI
    MAIL_FROM_ADDRESS="noreply@larka.test"
    ```
 
-2. **Создан [test-email.php](test-email.php)** - скрипт для быстрого тестирования отправки email
+2. **Создан [test-email.php](../test-email.php)** - скрипт для быстрого тестирования отправки email
 
    ```php
    <?php
@@ -557,7 +557,7 @@ php artisan tinker --execute="echo config('mail.mailers.smtp.host') . ':' . conf
    - **Для production:** Laravel Forge - $12/месяц (автоматизация)
    - **Для экспериментов:** PaaS (Railway/Heroku) - бесплатный tier
 
-2. **[README.md](README.md)** - Обновлён с полной документацией
+2. **[README.md](../README.md)** - Обновлён с полной документацией
 
    **Добавлено:**
    - Quick Start для разработки
@@ -627,7 +627,7 @@ php artisan up
 
 **Созданные файлы:**
 
-1. **[MCP-SETUP.md](MCP-SETUP.md)** - Полное руководство по настройке MCP (300+ строк)
+1. **MCP-SETUP.md** - Полное руководство по настройке MCP (300+ строк) _(файл не сохранён в текущей версии)_
 
    **Содержание:**
    - Что такое MCP и зачем он нужен
@@ -640,7 +640,7 @@ php artisan up
    - Безопасность и best practices
    - Troubleshooting
 
-2. **[claude_desktop_config.example.json](claude_desktop_config.example.json)** - Пример конфигурации
+2. **[claude_desktop_config.example.json](../claude_desktop_config.example.json)** - Пример конфигурации
 
    ```json
    {

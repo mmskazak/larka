@@ -111,25 +111,18 @@ make clean         # Clear cache
 
 ---
 
-## Documentation
 ## Документация
 
-- **[CHANGELOG.md](CHANGELOG.md)** - Полная история изменений проекта
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Руководство по деплою на production
-- **[Laravel Documentation](https://laravel.com/docs)** - Официальная документация Laravel
-Вся документация по проекту находится в папке `docs/`.
+Вся документация по проекту находится в папке `docs/`:
 
-- **Руководство по развертыванию** — Подробные инструкции по деплою на production-сервер.
-- **Настройка MCP** — Как настроить удаленное управление проектом через Claude.
-- **Тестирование MCP** — Как проверить и отладить MCP-соединение.
-- **История изменений (Changelog)** — Все изменения в проекте.
+- **[История изменений (CHANGELOG.md)](docs/CHANGELOG.md)** - Полная история изменений проекта
+- **[Руководство по развертыванию (DEPLOYMENT.md)](docs/DEPLOYMENT.md)** - Подробные инструкции по деплою на production-сервер
 
 ---
 
 ## Deployment to Production
 
-See detailed guide: **[DEPLOYMENT.md](DEPLOYMENT.md)**
-Подробное руководство смотрите в файле: **docs/DEPLOYMENT.md**
+Подробное руководство смотрите в файле: **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**
 
 ### Quick Overview
 
@@ -165,7 +158,7 @@ php artisan migrate --force
 php artisan config:cache
 ```
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for complete instructions.
+См. [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) для полных инструкций.
 
 ---
 
