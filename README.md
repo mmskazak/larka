@@ -1,61 +1,265 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Larka Project
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Laravel 12 application with Breeze authentication, Inertia.js, and Vue 3.
 
-## About Laravel
+## Tech Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Backend:**
+- Laravel 12.33.0
+- PHP 8.4.4
+- SQLite (development) / PostgreSQL (production)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Frontend:**
+- Vue 3
+- Inertia.js 2.0
+- Tailwind CSS 3.2
+- Vite 7.0
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Authentication:**
+- Laravel Breeze 2.3
+- Email verification enabled
+- Laravel Sanctum
 
-## Learning Laravel
+**Development Tools:**
+- MailHog (Docker) for email testing
+- Makefile for quick commands
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Quick Start (Development)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Requirements
 
-## Laravel Sponsors
+- PHP 8.4+
+- Composer
+- Node.js 20+
+- Docker Desktop (for MailHog)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Installation
 
-### Premium Partners
+```bash
+# 1. Clone repository
+git clone https://github.com/mmskazak/larka.git
+cd larka
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# 2. Install dependencies
+make install
+# Or manually:
+composer install
+npm install
+
+# 3. Configure environment
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+
+# 4. Start MailHog (for email testing)
+make mail-up
+
+# 5. Start development servers
+make dev
+# Or manually:
+php artisan serve  # Laravel: http://localhost:8000
+npm run dev        # Vite: http://localhost:5173
+```
+
+### Testing Email
+
+```bash
+# Send test email
+php test-email.php
+
+# Open MailHog web UI
+make mail-ui
+# Or visit: http://localhost:8025
+```
+
+---
+
+## Available Commands
+
+```bash
+make help          # Show all available commands
+
+# MailHog (Email Testing)
+make mail-up       # Start MailHog container
+make mail-down     # Stop MailHog
+make mail-ui       # Open web UI in browser
+
+# Development
+make install       # Install dependencies
+make dev           # Start Laravel + Vite
+make build         # Build frontend for production
+make serve         # Start Laravel server only
+
+# Testing & Maintenance
+make test          # Run PHPUnit tests
+make clean         # Clear cache
+```
+
+---
+
+## Features
+
+- ✅ User registration with email verification
+- ✅ Login / Logout
+- ✅ Password reset
+- ✅ User profile management
+- ✅ Dark mode support
+- ✅ SPA navigation with Inertia.js
+- ✅ Responsive design with Tailwind CSS
+
+---
+
+## Documentation
+
+- **[CHANGELOG.md](CHANGELOG.md)** - Полная история изменений проекта
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Руководство по деплою на production
+- **[Laravel Documentation](https://laravel.com/docs)** - Официальная документация Laravel
+
+---
+
+## Deployment to Production
+
+See detailed guide: **[DEPLOYMENT.md](DEPLOYMENT.md)**
+
+### Quick Overview
+
+**Recommended options:**
+
+1. **Laravel Forge** (easiest) - $12/month + VPS
+   - Automatic server setup
+   - One-click deployment
+   - Free SSL, monitoring, backups
+   - https://forge.laravel.com/
+
+2. **VPS (DigitalOcean, Linode, Hetzner)** - $5-6/month
+   - Full control
+   - Manual setup required
+   - Best for learning
+
+3. **PaaS (Heroku, Railway, Fly.io)** - Free tier available
+   - Zero server management
+   - Auto-deploy from GitHub
+   - Quick setup
+
+### Basic Deployment Steps
+
+```bash
+# On server
+git clone https://github.com/mmskazak/larka.git
+cd larka
+composer install --no-dev --optimize-autoloader
+npm install && npm run build
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --force
+php artisan config:cache
+```
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for complete instructions.
+
+---
+
+## Development Workflow
+
+### Git Flow
+
+```
+main (production)     ← stable releases only
+  ↑
+develop (staging)     ← development & testing
+  ↑
+feature/name          ← new features
+hotfix/name           ← urgent production fixes
+```
+
+### Creating a Feature
+
+```bash
+# 1. Create feature branch
+git checkout develop
+git checkout -b feature/new-feature
+
+# 2. Develop and test
+# ... your code ...
+
+# 3. Commit changes
+git add .
+git commit -m "Add new feature"
+
+# 4. Push and create Pull Request
+git push origin feature/new-feature
+```
+
+### Updating Production
+
+```bash
+# 1. Merge to main
+git checkout main
+git merge develop
+git tag -a v1.0.0 -m "Release v1.0.0"
+git push origin main --tags
+
+# 2. On server (or use GitHub Actions)
+cd /var/www/larka
+./deploy.sh  # See DEPLOYMENT.md
+```
+
+---
+
+## Troubleshooting
+
+### Email not showing in MailHog?
+
+Check `.env` configuration:
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=localhost
+MAIL_PORT=1025
+```
+
+Then clear config cache:
+```bash
+php artisan config:clear
+```
+
+### Docker errors?
+
+Make sure Docker Desktop is running:
+```bash
+docker ps  # Should show running containers
+```
+
+### 500 Error?
+
+Check logs:
+```bash
+tail -f storage/logs/laravel.log
+```
+
+---
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+---
+
+## Links
+
+- **Repository:** https://github.com/mmskazak/larka
+- **Issues:** https://github.com/mmskazak/larka/issues
+- **Laravel Docs:** https://laravel.com/docs
+- **Vue.js Docs:** https://vuejs.org/
+- **Inertia.js Docs:** https://inertiajs.com/

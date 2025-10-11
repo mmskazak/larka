@@ -530,6 +530,90 @@ php artisan tinker --execute="echo config('mail.mailers.smtp.host') . ':' . conf
 
 ---
 
+### 7. Создание документации по деплою и workflow разработки
+
+**Дата:** 2025-10-11
+
+**Цель:** Предоставить полное руководство по развертыванию проекта на production сервере и организации процесса разработки
+
+**Созданные файлы:**
+
+1. **[DEPLOYMENT.md](DEPLOYMENT.md)** - Полное руководство по деплою (500+ строк)
+
+   **Содержание:**
+   - Варианты деплоя (VPS, Laravel Forge, PaaS, Shared Hosting)
+   - Подготовка сервера (Ubuntu, Nginx, PHP, PostgreSQL)
+   - Первоначальный деплой (пошаговая инструкция)
+   - Настройка SSL (Let's Encrypt)
+   - Настройка Supervisor для очередей
+   - Workflow разработки (Git Flow)
+   - Скрипты автоматического деплоя
+   - CI/CD с GitHub Actions
+   - Troubleshooting
+   - Чек-листы
+
+   **Рекомендации:**
+   - **Для начала:** VPS (DigitalOcean/Hetzner) - $5-6/месяц
+   - **Для production:** Laravel Forge - $12/месяц (автоматизация)
+   - **Для экспериментов:** PaaS (Railway/Heroku) - бесплатный tier
+
+2. **[README.md](README.md)** - Обновлён с полной документацией
+
+   **Добавлено:**
+   - Quick Start для разработки
+   - Список всех команд Makefile
+   - Описание features
+   - Краткий обзор вариантов деплоя
+   - Development Workflow (Git Flow)
+   - Troubleshooting секция
+   - Ссылки на документацию
+
+**Git Flow (рекомендуемый):**
+
+```
+main (production)     ← только стабильные релизы
+  ↑
+develop (staging)     ← разработка и тестирование
+  ↑
+feature/название      ← новые фичи
+hotfix/название       ← срочные исправления
+```
+
+**Процесс разработки:**
+
+1. Создать feature branch: `git checkout -b feature/new-feature`
+2. Разработать и протестировать локально
+3. Создать Pull Request в `develop`
+4. После тестирования - мерж в `main`
+5. Деплой на production: `./deploy.sh` или через GitHub Actions
+
+**Скрипт деплоя (deploy.sh):**
+
+```bash
+#!/bin/bash
+php artisan down
+git pull origin main
+composer install --no-dev --optimize-autoloader
+npm ci && npm run build
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+sudo supervisorctl restart larka-worker:*
+php artisan up
+```
+
+**Автоматический деплой через GitHub Actions:**
+
+При push в `main` автоматически запускается деплой на сервер через SSH.
+
+**Git:**
+- Созданы 2 новых файла документации
+- Обновлён README
+- Коммит будет создан
+
+---
+
 ## Следующие шаги
 
 _Здесь будет документация дальнейших изменений..._
