@@ -743,11 +743,317 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC4+MpDwri5E13WHzq6hHT+Hfl/rbSZpWLUaGvmA6XnY
 
 ---
 
-## Следующие шаги
+### 9. Развертывание на Production сервере
 
-**Когда развернёте production сервер:**
-1. Добавьте SSH ключ на сервер
-2. Настройте MCP в Claude Desktop
-3. Я смогу помогать с деплоем и мониторингом удалённо!
+**Дата:** 2025-10-11
+
+**Цель:** Настроить и развернуть Laravel проект на production сервере с Ubuntu 22.04
+
+**Информация о сервере:**
+- **IP адрес:** 5.180.174.206
+- **ОС:** Ubuntu 22.04.5 LTS (Jammy Jellyfish)
+- **Hostname:** larka
+- **RAM:** 1 GB
+- **Диск:** 40 GB
+- **SSH доступ:** `ssh larka` или `ssh root@5.180.174.206`
+
+---
+
+#### Этап 1: Установка базового ПО
+
+**Создан:** [docs/scripts/server-setup.sh](scripts/server-setup.sh)
+
+**Что устанавливается:**
+- Nginx
+- PHP 8.3 + расширения
+- Composer
+- Node.js 20 LTS + NPM
+- PostgreSQL 15
+- Supervisor (для фоновых задач)
+- Certbot (для SSL)
+- UFW (firewall)
+
+**Выполнено:**
+```bash
+sudo bash /home/deployer/server-setup.sh
+```
+
+**Время выполнения:** ~5-10 минут
+
+---
+
+#### Этап 2: Обновление до PHP 8.4
+
+**Создан:** [docs/scripts/install-php84.sh](scripts/install-php84.sh)
+
+**Причина:** Для совместимости с локальной версией разработки (PHP 8.4.4)
+
+**Что делает скрипт:**
+1. Добавляет репозиторий PHP 8.4
+2. Устанавливает PHP 8.4 и все расширения
+3. Устанавливает PHP 8.4 как версию по умолчанию
+4. Останавливает PHP 8.3 FPM
+5. Запускает PHP 8.4 FPM
+
+**Выполнено:**
+```bash
+sudo bash /home/deployer/install-php84.sh
+```
+
+**Результат:**
+```
+PHP 8.4.13 (cli) (built: Oct  1 2025 20:33:51) (NTS)
+```
+
+---
+
+#### Этап 3: Настройка PostgreSQL базы данных
+
+**Создан:** [docs/scripts/setup-database.sh](scripts/setup-database.sh)
+
+**Что создается:**
+- База данных: `larka_db`
+- Пользователь: `larka_user`
+- Пароль: генерируется автоматически
+- Файл credentials: `/home/deployer/.env.database`
+
+**Выполнено:**
+```bash
+sudo bash /home/deployer/setup-database.sh
+```
+
+**Конфигурация БД:**
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=larka_db
+DB_USERNAME=larka_user
+DB_PASSWORD=tFPlAH7jjAYeHuzPJ2wjrLzLD
+```
+
+**Проверка подключения:**
+```
+PostgreSQL 14.19 (Ubuntu 14.19-0ubuntu0.22.04.1) on x86_64-pc-linux-gnu
+```
+
+---
+
+#### Этап 4: Развертывание Laravel проекта
+
+**Создан:** [docs/scripts/deploy-initial.sh](scripts/deploy-initial.sh)
+
+**Структура:**
+```
+/var/www/larka/       ← основная директория проекта
+├── public/           ← document root для Nginx
+├── storage/          ← логи, кеш, загрузки
+├── .env              ← конфигурация окружения
+└── ...
+```
+
+**Что делает скрипт:**
+1. Создает директорию `/var/www/larka`
+2. Клонирует проект из GitHub
+3. Создает `.env` файл из `.env.example`
+4. Добавляет настройки базы данных
+5. Устанавливает Composer зависимости (`--no-dev`)
+6. Генерирует APP_KEY
+7. Устанавливает NPM зависимости
+8. Собирает frontend (`npm run build`)
+9. Настраивает права доступа (`www-data:www-data`)
+
+**Выполнено:**
+```bash
+sudo bash /home/deployer/deploy-initial.sh
+```
+
+**Исправление конфигурации:**
+
+**Создан:** [docs/scripts/fix-env.sh](scripts/fix-env.sh)
+
+Проблема: настройки БД в `.env` были закомментированы
+
+**Выполнено:**
+```bash
+sudo bash /home/deployer/fix-env.sh
+```
+
+**Запуск миграций:**
+```bash
+cd /var/www/larka
+sudo -u www-data php artisan migrate --force
+```
+
+✅ Все таблицы созданы успешно
+
+---
+
+#### Этап 5: Настройка Nginx
+
+**Создан:** [docs/scripts/nginx-config.conf](scripts/nginx-config.conf)
+
+**Конфигурация:**
+- Слушает порт 80 (HTTP)
+- Server name: `_` (любой домен/IP)
+- Document root: `/var/www/larka/public`
+- PHP-FPM: `/var/run/php/php8.4-fpm.sock`
+- Логи: `/var/log/nginx/larka-*.log`
+- Max upload size: 20MB
+- Кеширование статики (1 год)
+
+**Создан:** [docs/scripts/setup-nginx.sh](scripts/setup-nginx.sh)
+
+**Что делает скрипт:**
+1. Копирует конфигурацию в `/etc/nginx/sites-available/larka`
+2. Отключает default сайт
+3. Создает симлинк в `/etc/nginx/sites-enabled/`
+4. Проверяет конфигурацию (`nginx -t`)
+5. Перезапускает Nginx
+
+**Выполнено:**
+```bash
+# Загрузка конфигурации
+scp scripts/nginx-config.conf larka:~/larka.conf
+
+# Применение конфигурации
+sudo bash /home/deployer/setup-nginx.sh
+```
+
+---
+
+#### Итоговая конфигурация
+
+**Пользователи и права:**
+- Веб-сервер: `www-data`
+- PHP-FPM: работает под `www-data`
+- Nginx: работает под `www-data`
+- Деплой: через `deployer` или `root`
+
+**Права доступа:**
+```bash
+/var/www/larka/          → www-data:www-data (755)
+/var/www/larka/storage/  → www-data:www-data (775)
+/var/www/larka/bootstrap/cache/ → www-data:www-data (775)
+```
+
+**Запуск команд Artisan:**
+```bash
+# Всегда от имени www-data
+sudo -u www-data php artisan <команда>
+```
+
+---
+
+#### Доступ к сайту
+
+**URL:** http://5.180.174.206
+
+**Статус:** ✅ Сайт развернут и работает
+
+**Логи:**
+- Laravel: `/var/www/larka/storage/logs/laravel.log`
+- Nginx access: `/var/log/nginx/larka-access.log`
+- Nginx error: `/var/log/nginx/larka-error.log`
+- PHP-FPM: `/var/log/php8.4-fpm.log`
+
+---
+
+#### Созданная документация
+
+1. **[docs/SERVER-SETUP.md](SERVER-SETUP.md)** - Полное руководство по настройке сервера (200+ строк)
+   - Пошаговая инструкция
+   - Все команды с объяснениями
+   - Troubleshooting
+   - Обслуживание и обновления
+   - Безопасность
+
+2. **[docs/scripts/README.md](scripts/README.md)** - Описание всех deployment скриптов
+   - Назначение каждого скрипта
+   - Параметры и требования
+   - Порядок выполнения
+   - Примеры использования
+
+---
+
+#### Созданные скрипты развертывания
+
+Все скрипты в папке `scripts/`:
+
+1. **server-setup.sh** - Установка базового ПО (Nginx, PHP 8.3, PostgreSQL, etc.)
+2. **install-php84.sh** - Обновление до PHP 8.4
+3. **setup-database.sh** - Создание и настройка PostgreSQL БД
+4. **deploy-initial.sh** - Первоначальное развертывание Laravel проекта
+5. **fix-env.sh** - Исправление .env и прав доступа
+6. **setup-nginx.sh** - Настройка Nginx конфигурации
+7. **nginx-config.conf** - Конфигурационный файл Nginx
+
+---
+
+#### Следующие шаги (опционально)
+
+**Для production использования:**
+
+1. **Купить домен** и настроить DNS
+   ```
+   A запись: yourdomain.com → 5.180.174.206
+   ```
+
+2. **Настроить SSL сертификат:**
+   ```bash
+   # Обновить nginx-config.conf с доменом
+   server_name yourdomain.com;
+
+   # Получить SSL сертификат
+   sudo certbot --nginx -d yourdomain.com
+   ```
+
+3. **Настроить автоматический деплой:**
+   - GitHub Actions для CI/CD
+   - Webhook для автоматического обновления
+
+4. **Настроить мониторинг:**
+   - Laravel Telescope для отладки
+   - Логи и алерты
+
+5. **Резервное копирование:**
+   - Автоматический бэкап БД
+   - Снапшоты сервера
+
+---
+
+**Git:**
+- Созданы 7 скриптов в папке `scripts/`
+- Созданы 2 файла документации
+- Обновлён CHANGELOG
+- Коммит будет создан
+
+---
+
+## Текущее состояние проекта
+
+**Локальная разработка:**
+- ✅ Laravel 12.33.0 + PHP 8.4.4
+- ✅ Laravel Breeze + Inertia + Vue 3
+- ✅ Email verification активирована
+- ✅ MailHog для тестирования email
+- ✅ Makefile для автоматизации
+- ✅ Git repository: https://github.com/mmskazak/larka
+
+**Production сервер:**
+- ✅ Ubuntu 22.04 LTS (1GB RAM, 40GB диск)
+- ✅ Nginx + PHP 8.4.13 + PostgreSQL 14.19
+- ✅ Laravel проект развернут в `/var/www/larka`
+- ✅ База данных настроена и миграции применены
+- ✅ Сайт доступен: http://5.180.174.206
+- ❌ SSL сертификат (требуется домен)
+- ❌ MCP подключение (требуется добавить SSH ключ)
+
+**Документация:**
+- ✅ README.md - быстрый старт
+- ✅ CHANGELOG.md - полная история изменений
+- ✅ docs/DEPLOYMENT.md - руководство по деплою
+- ✅ docs/SERVER-SETUP.md - настройка production сервера
+- ✅ scripts/README.md - описание deployment скриптов
 
 _Здесь будет документация дальнейших изменений..._
