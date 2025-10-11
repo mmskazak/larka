@@ -339,18 +339,24 @@ POST   /email/verification-notification - повторная отправка п
 
 **Использование:**
 
-1. **Запуск MailHog:**
+**⚠️ Требования:**
+- Docker Desktop должен быть установлен и **запущен**
+- Для Windows: https://www.docker.com/products/docker-desktop/
+
+1. **Запустить Docker Desktop** (если ещё не запущен)
+
+2. **Запуск MailHog:**
    ```bash
    make mail-up
    ```
 
-2. **Открыть Web UI:**
+3. **Открыть Web UI:**
    ```bash
    make mail-ui
    # Или вручную: http://localhost:8025
    ```
 
-3. **Обновить .env файл:**
+4. **Обновить .env файл:**
    Скопируйте настройки из `.env.example` в `.env`:
    ```env
    MAIL_MAILER=smtp
@@ -379,6 +385,70 @@ POST   /email/verification-notification - повторная отправка п
 **Git:**
 - Созданы 2 новых файла
 - Обновлён .env.example
+- Коммит будет создан
+
+---
+
+### 5. Исправления для Windows: кодировка и Docker Compose
+
+**Дата:** 2025-10-11
+
+**Проблемы:**
+1. Эмодзи в Makefile не отображались в Windows PowerShell
+2. Docker Compose выдавал warning о устаревшем поле `version`
+
+**Исправления:**
+
+1. **[Makefile](Makefile)** - Убраны все эмодзи, заменены на обычный текст
+
+   ```makefile
+   # Было:
+   @echo "📧 MailHog (Email Testing):"
+   @echo "🚀 Starting MailHog..."
+
+   # Стало:
+   @echo "[MailHog - Email Testing]"
+   @echo "Starting MailHog..."
+   ```
+
+   Также исправлена команда `mail-ui` для Windows:
+   ```makefile
+   # Было:
+   @start http://localhost:8025 2>/dev/null || ...
+
+   # Стало:
+   @start http://localhost:8025 2>nul || echo "Please open http://localhost:8025 in your browser"
+   ```
+
+2. **[docker-compose.yml](docker-compose.yml)** - Удалено устаревшее поле `version`
+
+   ```yaml
+   # Было:
+   version: '3.8'
+
+   services:
+     mailhog:
+
+   # Стало:
+   services:
+     mailhog:
+   ```
+
+**Результат:**
+- ✅ Makefile корректно отображается в Windows PowerShell
+- ✅ Docker Compose больше не выдаёт warnings
+- ✅ Команда `make mail-ui` работает в Windows
+
+**Команды остались те же:**
+```bash
+make help          # Показать все команды
+make mail-up       # Запустить MailHog
+make mail-ui       # Открыть Web UI
+```
+
+**Git:**
+- Изменены 2 файла
+- Обновлена документация
 - Коммит будет создан
 
 ---
