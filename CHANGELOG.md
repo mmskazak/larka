@@ -177,6 +177,97 @@ npm run dev
 
 ---
 
+### 3. Включение верификации email
+
+**Дата:** 2025-10-11
+
+**Действия:**
+
+1. **Активирован интерфейс MustVerifyEmail в модели User**
+
+   **Файл:** [app/Models/User.php](app/Models/User.php:5-10)
+
+   Изменения:
+   ```php
+   // Было:
+   // use Illuminate\Contracts\Auth\MustVerifyEmail;
+   class User extends Authenticatable
+
+   // Стало:
+   use Illuminate\Contracts\Auth\MustVerifyEmail;
+   class User extends Authenticatable implements MustVerifyEmail
+   ```
+
+2. **Добавлен middleware 'verified' к защищённым маршрутам**
+
+   **Файл:** [routes/web.php](routes/web.php:19-25)
+
+   Изменения:
+   ```php
+   // Dashboard уже был защищён
+   Route::get('/dashboard', function () {
+       return Inertia::render('Dashboard');
+   })->middleware(['auth', 'verified'])->name('dashboard');
+
+   // Добавлена защита к маршрутам профиля
+   Route::middleware(['auth', 'verified'])->group(function () {
+       Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+       Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+       Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+   });
+   ```
+
+3. **Обновлён .env.example с настройками почты**
+
+   **Файл:** [.env.example](.env.example:50-66)
+
+   Добавлены комментарии для разработчиков:
+   ```env
+   MAIL_MAILER=log
+   MAIL_ENCRYPTION=null
+   MAIL_FROM_ADDRESS="hello@example.com"
+   MAIL_FROM_NAME="${APP_NAME}"
+
+   # For development, use Mailtrap (https://mailtrap.io) or MailHog
+   # MAIL_MAILER=smtp
+   # MAIL_HOST=sandbox.smtp.mailtrap.io
+   # MAIL_PORT=2525
+   # MAIL_USERNAME=your_mailtrap_username
+   # MAIL_PASSWORD=your_mailtrap_password
+   # MAIL_ENCRYPTION=tls
+   ```
+
+**Как работает верификация email:**
+
+1. Пользователь регистрируется
+2. Ему отправляется письмо со ссылкой подтверждения
+3. При попытке доступа к защищённым маршрутам (/dashboard, /profile) его перенаправляет на `/verify-email`
+4. На странице `/verify-email` пользователь видит уведомление и может запросить повторную отправку письма
+5. После клика по ссылке в письме email подтверждается, поле `email_verified_at` устанавливается
+6. Пользователь получает доступ к защищённым маршрутам
+
+**Маршруты верификации:**
+```
+GET    /verify-email                    - страница уведомления (verification.notice)
+GET    /verify-email/{id}/{hash}        - обработка подтверждения (verification.verify)
+POST   /email/verification-notification - повторная отправка письма (verification.send)
+```
+
+**Для тестирования в development:**
+
+По умолчанию `MAIL_MAILER=log`, письма сохраняются в `storage/logs/laravel.log`
+
+Для реальной отправки:
+- Используйте [Mailtrap.io](https://mailtrap.io) - сервис для тестирования email
+- Или [MailHog](https://github.com/mailhog/MailHog) - локальный SMTP сервер
+- Настройте SMTP в `.env` файле
+
+**Git:**
+- Изменено 3 файла
+- Коммит будет создан
+
+---
+
 ## Следующие шаги
 
 _Здесь будет документация дальнейших изменений..._
