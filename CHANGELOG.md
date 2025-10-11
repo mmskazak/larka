@@ -453,6 +453,83 @@ make mail-ui       # Открыть Web UI
 
 ---
 
+### 6. Настройка .env для работы с MailHog и тестовый скрипт
+
+**Дата:** 2025-10-11
+
+**Проблема:** При попытке отправить письмо оно не попадало в MailHog, так как в `.env` был `MAIL_MAILER=log`
+
+**Решение:**
+
+1. **Обновлён [.env](.env:50-58)** для работы с MailHog
+
+   ```env
+   # Было:
+   MAIL_MAILER=log
+   MAIL_HOST=127.0.0.1
+   MAIL_PORT=2525
+   MAIL_FROM_ADDRESS="hello@example.com"
+
+   # Стало:
+   MAIL_MAILER=smtp
+   MAIL_HOST=localhost
+   MAIL_PORT=1025
+   MAIL_ENCRYPTION=null
+   MAIL_FROM_ADDRESS="noreply@larka.test"
+   ```
+
+2. **Создан [test-email.php](test-email.php)** - скрипт для быстрого тестирования отправки email
+
+   ```php
+   <?php
+   use Illuminate\Support\Facades\Mail;
+
+   require __DIR__.'/vendor/autoload.php';
+   $app = require_once __DIR__.'/bootstrap/app.php';
+   $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
+
+   Mail::raw('This is a test email from Laravel!', function ($message) {
+       $message->to('test@example.com')
+               ->subject('Test Email from Larka Project');
+   });
+
+   echo "Test email sent to MailHog!\n";
+   echo "Check: http://localhost:8025\n";
+   ```
+
+**Использование тестового скрипта:**
+
+```bash
+# 1. Убедитесь что MailHog запущен
+make mail-up
+
+# 2. Отправьте тестовое письмо
+php test-email.php
+
+# 3. Откройте MailHog Web UI
+make mail-ui
+# Или http://localhost:8025
+```
+
+**После изменения .env всегда очищайте кеш:**
+```bash
+php artisan config:clear
+```
+
+**Проверка текущих настроек почты:**
+```bash
+php artisan tinker --execute="echo config('mail.mailers.smtp.host') . ':' . config('mail.mailers.smtp.port');"
+# Должно вывести: localhost:1025
+```
+
+**Git:**
+- Изменён .env
+- Создан test-email.php
+- Обновлена документация
+- Коммит будет создан
+
+---
+
 ## Следующие шаги
 
 _Здесь будет документация дальнейших изменений..._
