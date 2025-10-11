@@ -268,6 +268,121 @@ POST   /email/verification-notification - повторная отправка п
 
 ---
 
+### 4. Настройка MailHog через Docker и создание Makefile
+
+**Дата:** 2025-10-11
+
+**Цель:** Упростить локальную разработку с тестированием email через MailHog в Docker
+
+**Созданные файлы:**
+
+1. **[docker-compose.yml](docker-compose.yml)** - Docker Compose конфигурация
+
+   ```yaml
+   version: '3.8'
+
+   services:
+     mailhog:
+       image: mailhog/mailhog:latest
+       container_name: larka_mailhog
+       ports:
+         - "1025:1025"  # SMTP server
+         - "8025:8025"  # Web UI
+       networks:
+         - larka_network
+       restart: unless-stopped
+   ```
+
+   **Порты:**
+   - `1025` - SMTP сервер (для отправки писем из Laravel)
+   - `8025` - Web UI (для просмотра писем в браузере)
+
+2. **[Makefile](Makefile)** - Удобные команды для разработки
+
+   **Команды MailHog:**
+   ```bash
+   make mail-up       # Запустить MailHog
+   make mail-down     # Остановить MailHog
+   make mail-restart  # Перезапустить MailHog
+   make mail-logs     # Показать логи MailHog
+   make mail-ui       # Открыть Web UI в браузере
+   ```
+
+   **Команды для разработки:**
+   ```bash
+   make install       # Установить зависимости (composer + npm)
+   make dev           # Запустить Laravel + Vite
+   make build         # Собрать frontend
+   make serve         # Запустить только Laravel
+   make test          # Запустить тесты
+   make clean         # Очистить кеш
+   make help          # Показать все команды
+   ```
+
+3. **Обновлён [.env.example](.env.example:50-74)**
+
+   ```env
+   MAIL_MAILER=smtp
+   MAIL_HOST=localhost
+   MAIL_PORT=1025
+   MAIL_USERNAME=null
+   MAIL_PASSWORD=null
+   MAIL_ENCRYPTION=null
+   MAIL_FROM_ADDRESS="noreply@larka.test"
+   MAIL_FROM_NAME="${APP_NAME}"
+
+   # MailHog (Docker) - for local development
+   # Start: make mail-up
+   # Web UI: http://localhost:8025
+   # SMTP: localhost:1025
+   ```
+
+**Использование:**
+
+1. **Запуск MailHog:**
+   ```bash
+   make mail-up
+   ```
+
+2. **Открыть Web UI:**
+   ```bash
+   make mail-ui
+   # Или вручную: http://localhost:8025
+   ```
+
+3. **Обновить .env файл:**
+   Скопируйте настройки из `.env.example` в `.env`:
+   ```env
+   MAIL_MAILER=smtp
+   MAIL_HOST=localhost
+   MAIL_PORT=1025
+   MAIL_ENCRYPTION=null
+   ```
+
+4. **Тестирование:**
+   - Зарегистрируйте пользователя через `/register`
+   - Письмо с подтверждением появится в MailHog Web UI
+   - Кликните по ссылке для верификации email
+
+**Преимущества MailHog:**
+- ✅ Не требует регистрации (в отличие от Mailtrap)
+- ✅ Работает локально (нет отправки в интернет)
+- ✅ Удобный Web интерфейс
+- ✅ Мгновенное получение писем
+- ✅ Можно тестировать без интернета
+- ✅ Автоматический запуск через Makefile
+
+**Альтернативы:**
+- `MAIL_MAILER=log` - письма в `storage/logs/laravel.log`
+- Mailtrap.io - облачный сервис для тестирования
+
+**Git:**
+- Созданы 2 новых файла
+- Обновлён .env.example
+- Коммит будет создан
+
+---
+
 ## Следующие шаги
 
 _Здесь будет документация дальнейших изменений..._

@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: larka_mailhog
+    ports:
+      - "1025:1025"  # SMTP server
+      - "8025:8025"  # Web UI
+    networks:
+      - larka_network
+    restart: unless-stopped
+
+networks:
+  larka_network:
+    driver: bridge
