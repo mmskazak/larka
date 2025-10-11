@@ -614,6 +614,140 @@ php artisan up
 
 ---
 
+### 8. Настройка MCP (Model Context Protocol) для удалённого управления
+
+**Дата:** 2025-10-11
+
+**Цель:** Подготовить возможность управления production сервером через Claude с использованием SSH MCP
+
+**Что такое MCP:**
+- Протокол для подключения Claude к внешним инструментам
+- Позволяет работать с серверами, базами данных, GitHub и др.
+- После настройки Claude сможет выполнять команды на сервере напрямую
+
+**Созданные файлы:**
+
+1. **[MCP-SETUP.md](MCP-SETUP.md)** - Полное руководство по настройке MCP (300+ строк)
+
+   **Содержание:**
+   - Что такое MCP и зачем он нужен
+   - SSH MCP сервер для удалённого доступа
+   - Создание и настройка SSH ключей
+   - Конфигурация Claude Desktop
+   - PostgreSQL MCP для работы с БД
+   - GitHub MCP для управления репозиторием
+   - Docker MCP для локальных контейнеров
+   - Безопасность и best practices
+   - Troubleshooting
+
+2. **[claude_desktop_config.example.json](claude_desktop_config.example.json)** - Пример конфигурации
+
+   ```json
+   {
+     "mcpServers": {
+       "larka-production": {
+         "command": "npx",
+         "args": ["-y", "@modelcontextprotocol/server-ssh", "deployer@YOUR_IP"],
+         "env": {"SSH_KEY_PATH": "путь_к_ключу"}
+       }
+     }
+   }
+   ```
+
+**Созданы SSH ключи:**
+
+```bash
+# Приватный ключ (СЕКРЕТНЫЙ, хранить локально)
+C:\Users\HOME\.ssh\id_ed25519_larka
+
+# Публичный ключ (добавить на сервер)
+C:\Users\HOME\.ssh\id_ed25519_larka.pub
+```
+
+**Содержимое публичного ключа:**
+```
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC4+MpDwri5E13WHzq6hHT+Hfl/rbSZpWLUaGvmA6XnY larka-project-mcp
+```
+
+**Тип ключа:** ed25519
+- Современный криптографический алгоритм
+- Короткий (99 символов против 400+ для RSA)
+- Безопасный и быстрый
+- Без пароля (для автоматизации)
+
+**Следующие шаги для активации MCP:**
+
+1. **После деплоя сервера:**
+   ```bash
+   # Добавьте публичный ключ на сервер
+   ssh deployer@your-server-ip
+   mkdir -p ~/.ssh
+   echo "ssh-ed25519 AAAAC3Nza..." >> ~/.ssh/authorized_keys
+   chmod 600 ~/.ssh/authorized_keys
+   chmod 700 ~/.ssh
+   ```
+
+2. **Настройте Claude Desktop:**
+   - Откройте: `%APPDATA%\Claude\claude_desktop_config.json`
+   - Скопируйте конфиг из `claude_desktop_config.example.json`
+   - Замените `YOUR_IP` на IP вашего сервера
+   - Перезапустите Claude Desktop
+
+3. **После подключения я смогу:**
+   ```bash
+   # Деплоить код
+   cd /var/www/larka && ./deploy.sh
+
+   # Смотреть логи
+   tail -f /var/www/larka/storage/logs/laravel.log
+
+   # Проверять статус
+   systemctl status nginx
+   supervisorctl status
+
+   # Выполнять миграции
+   php artisan migrate
+   ```
+
+**Доступные MCP серверы:**
+
+| MCP сервер | Назначение | Пакет |
+|------------|-----------|-------|
+| SSH | Удалённые команды | `@modelcontextprotocol/server-ssh` |
+| PostgreSQL | Работа с БД | `@modelcontextprotocol/server-postgres` |
+| GitHub | Issues, PR, Releases | `@modelcontextprotocol/server-github` |
+| Docker | Управление контейнерами | `@modelcontextprotocol/server-docker` |
+
+**Преимущества для разработки:**
+
+- ✅ Деплой одной командой через чат
+- ✅ Мониторинг сервера в реальном времени
+- ✅ Быстрая отладка production проблем
+- ✅ Работа с БД без внешних клиентов
+- ✅ Управление GitHub из чата
+- ✅ Автоматизация рутинных задач
+
+**Безопасность:**
+
+- ⚠️ Используйте отдельные ключи для разных проектов
+- ⚠️ Не давайте root доступ (только deployer)
+- ⚠️ Храните приватные ключи локально
+- ⚠️ Никогда не коммитьте ключи в Git
+- ⚠️ Используйте сильные пароли для БД
+
+**Git:**
+- Созданы 2 файла документации
+- Сгенерированы SSH ключи
+- Публичный ключ готов для добавления на сервер
+- Коммит будет создан
+
+---
+
 ## Следующие шаги
+
+**Когда развернёте production сервер:**
+1. Добавьте SSH ключ на сервер
+2. Настройте MCP в Claude Desktop
+3. Я смогу помогать с деплоем и мониторингом удалённо!
 
 _Здесь будет документация дальнейших изменений..._

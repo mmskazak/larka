@@ -1,0 +1,45 @@
+{
+  "mcpServers": {
+    "larka-production": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-ssh",
+        "deployer@YOUR_PRODUCTION_IP"
+      ],
+      "env": {
+        "SSH_KEY_PATH": "C:\\Users\\HOME\\.ssh\\id_ed25519_larka"
+      }
+    },
+    "larka-staging": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-ssh",
+        "deployer@YOUR_STAGING_IP"
+      ],
+      "env": {
+        "SSH_KEY_PATH": "C:\\Users\\HOME\\.ssh\\id_ed25519_larka"
+      }
+    },
+    "larka-database": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://larka_user:YOUR_PASSWORD@YOUR_SERVER_IP/larka"
+      ]
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "ghp_YOUR_GITHUB_TOKEN"
+      }
+    },
+    "docker-local": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-docker"]
+    }
+  }
+}
