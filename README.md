@@ -112,16 +112,24 @@ make clean         # Clear cache
 ---
 
 ## Documentation
+## Документация
 
 - **[CHANGELOG.md](CHANGELOG.md)** - Полная история изменений проекта
 - **[DEPLOYMENT.md](DEPLOYMENT.md)** - Руководство по деплою на production
 - **[Laravel Documentation](https://laravel.com/docs)** - Официальная документация Laravel
+Вся документация по проекту находится в папке `docs/`.
+
+- **Руководство по развертыванию** — Подробные инструкции по деплою на production-сервер.
+- **Настройка MCP** — Как настроить удаленное управление проектом через Claude.
+- **Тестирование MCP** — Как проверить и отладить MCP-соединение.
+- **История изменений (Changelog)** — Все изменения в проекте.
 
 ---
 
 ## Deployment to Production
 
 See detailed guide: **[DEPLOYMENT.md](DEPLOYMENT.md)**
+Подробное руководство смотрите в файле: **docs/DEPLOYMENT.md**
 
 ### Quick Overview
 
