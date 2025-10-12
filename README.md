@@ -14,6 +14,7 @@ Laravel 12 application with Breeze authentication, Inertia.js, and Vue 3.
 - Inertia.js 2.0
 - Tailwind CSS 3.2
 - Vite 7.0
+- Vue I18n 9 (internationalization)
 
 **Authentication:**
 - Laravel Breeze 2.3
@@ -108,6 +109,7 @@ make clean         # Clear cache
 - ✅ Dark mode support
 - ✅ SPA navigation with Inertia.js
 - ✅ Responsive design with Tailwind CSS
+- ✅ Multi-language support (Russian/English) with Vue I18n
 
 ---
 
@@ -117,6 +119,7 @@ make clean         # Clear cache
 
 - **[История изменений (CHANGELOG.md)](docs/CHANGELOG.md)** - Полная история изменений проекта
 - **[Руководство по развертыванию (DEPLOYMENT.md)](docs/DEPLOYMENT.md)** - Подробные инструкции по деплою на production-сервер
+- **[Локализация (LOCALIZATION.md)](docs/LOCALIZATION.md)** - Руководство по работе с переводами и добавлению новых языков
 
 ---
 
