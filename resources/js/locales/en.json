@@ -9,9 +9,14 @@
     "remember_me": "Remember me",
     "forgot_password": "Forgot your password?",
     "reset_password": "Reset Password",
+    "send_reset_link": "Email Password Reset Link",
     "verify_email": "Verify Email",
     "already_registered": "Already registered?",
-    "new_password": "New Password"
+    "new_password": "New Password",
+    "verify_email_sent": "A new verification link has been sent to your email address.",
+    "verify_email_text": "Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.",
+    "resend_verification": "Resend Verification Email",
+    "confirm_password_text": "This is a secure area of the application. Please confirm your password before continuing."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -21,17 +26,28 @@
     "title": "Profile",
     "edit": "Edit Profile",
     "information": "Profile Information",
+    "information_text": "Update your account's profile information and email address.",
     "update_password": "Update Password",
+    "update_password_text": "Ensure your account is using a long, random password to stay secure.",
     "delete_account": "Delete Account",
+    "delete_account_text": "Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.",
+    "delete_confirm": "Are you sure you want to delete your account?",
+    "delete_confirm_text": "Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.",
     "save": "Save",
     "saved": "Saved.",
     "name": "Name",
-    "current_password": "Current Password"
+    "current_password": "Current Password",
+    "unverified_email": "Your email address is unverified.",
+    "click_to_resend": "Click here to re-send the verification email."
   },
   "common": {
     "cancel": "Cancel",
     "delete": "Delete",
     "confirm": "Confirm",
-    "close": "Close"
+    "close": "Close",
+    "no_problem": "No problem."
+  },
+  "auth_extended": {
+    "forgot_password_text": "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one."
   }
 }
