@@ -1,0 +1,55 @@
+image: php:8.4
+
+stages:
+  - test
+
+variables:
+  MYSQL_DATABASE: laravel_test
+  MYSQL_ROOT_PASSWORD: secret
+  DB_HOST: mysql
+  DB_USERNAME: root
+
+cache:
+  paths:
+    - vendor/
+    - node_modules/
+
+test:
+  stage: test
+  services:
+    - mysql:8.0
+  before_script:
+    # Install system dependencies
+    - apt-get update -qq && apt-get install -y -qq git curl libzip-dev zip unzip nodejs npm
+
+    # Install PHP extensions
+    - docker-php-ext-install pdo_mysql zip
+
+    # Install Composer
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+    # Setup Node.js (v20)
+    - curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    - apt-get install -y nodejs
+
+    # Copy environment file
+    - cp .env.example .env
+
+    # Install Composer dependencies
+    - composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+    # Generate application key
+    - php artisan key:generate
+
+    # Install Node dependencies
+    - npm ci
+
+    # Build assets
+    - npm run build
+
+    # Set permissions
+    - chmod -R 777 storage bootstrap/cache
+
+  script:
+    # Run tests
+    - php artisan test
