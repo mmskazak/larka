@@ -4,10 +4,16 @@ stages:
   - test
 
 variables:
-  MYSQL_DATABASE: laravel_test
-  MYSQL_ROOT_PASSWORD: secret
-  DB_HOST: mysql
-  DB_USERNAME: root
+  POSTGRES_DB: laravel_test
+  POSTGRES_USER: laravel
+  POSTGRES_PASSWORD: secret
+  POSTGRES_HOST_AUTH_METHOD: trust
+  DB_CONNECTION: pgsql
+  DB_HOST: postgres
+  DB_PORT: 5432
+  DB_DATABASE: laravel_test
+  DB_USERNAME: laravel
+  DB_PASSWORD: secret
 
 cache:
   paths:
@@ -17,13 +23,13 @@ cache:
 test:
   stage: test
   services:
-    - mysql:8.0
+    - postgres:16
   before_script:
     # Install system dependencies
-    - apt-get update -qq && apt-get install -y -qq git curl libzip-dev zip unzip nodejs npm
+    - apt-get update -qq && apt-get install -y -qq git curl libzip-dev zip unzip libpq-dev
 
     # Install PHP extensions
-    - docker-php-ext-install pdo_mysql zip
+    - docker-php-ext-install pdo_pgsql pgsql zip
 
     # Install Composer
     - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
